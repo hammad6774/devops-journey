@@ -1,24 +1,28 @@
-# devops-journey
-My DevOps learning journey - from Linux basics to Cloud and Automation.
-🚀 My DevOps Journey
+🚀 My DevOps Journey | Hammad Ullah Javed
+Computer Science Undergraduate @ Foundation University Islamabad
 
-This is my personal DevOps learning journey.  
-I am starting from zero and will use this repository to save my notes, commands, and projects as I learn step by step.
+I am an aspiring DevOps Engineer focused on automating system tasks and managing Linux environments. This repository tracks my technical progress from basic commands to professional automation.
 
-## 📌 Topics I will learn
-- Linux basics 🐧  
-- Git & GitHub 🔥  
-- Docker 🐳  
-- Kubernetes ☸️  
-- CI/CD pipelines ⚙️  
-- Cloud ☁️  
+🛠️ Current Technical Skills
+Linux Administration: Proficient in Ubuntu administration, file permissions, and terminal workflows.
 
-## 📂 How I will use this repo
-- `linux-commands/` → Notes about Linux commands I practice  
-- `git-basics/` → Notes about Git commands and workflows  
-- `projects/` → Small DevOps projects I build  
+Bash Scripting: Developing automated logic for system tasks, including variables, conditional checks, and exit status validation.
 
----
+Version Control: Managing code and documentation via Git and GitHub.
 
-✨ This repo is just the beginning of my DevOps journey.  
-I will keep updating it as I learn new tools and skills.
+Hardware & Systems: Performance monitoring and optimization for Ryzen 7 environments.
+
+📂 Featured Project
+Automated System Health & Backup Bot
+Description: A professional Bash script that monitors system disk usage. If usage exceeds a set threshold, it automatically zips specific directories into a dated archive and verifies the backup success using exit codes ($?).
+
+Key Skills: Bash Automation, Linux System Monitoring, and Error Handling.
+
+🎯 Learning Roadmap (2026)
+[x] Linux Foundations & Bash Scripting
+
+[x] Git & GitHub Professional Workflows
+
+[ ] Docker & Containerization (Next Step)
+
+[ ] CI/CD Pipeline Automation
