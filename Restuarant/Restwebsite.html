@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ambre — Fine Dining</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg:          #14100d;
+    --surface:     #1d1712;
+    --surface-2:   #251d15;
+    --line:        rgba(201,162,75,0.18);
+    --gold:        #c9a24b;
+    --gold-bright: #e6c878;
+    --wine:        #7c2632;
+    --text:        #f2ead9;
+    --text-muted:  #a89a84;
+    --max: 1180px;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-weight:300;
+    line-height:1.65;
+    overflow-x:hidden;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  img{ max-width:100%; display:block; }
+
+  h1,h2,h3,h4{ font-family:'Playfair Display', serif; font-weight:600; letter-spacing:0.01em; }
+  .script{ font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500; }
+
+  .wrap{ max-width:var(--max); margin:0 auto; padding:0 40px; }
+
+  .eyebrow{
+    font-family:'Inter', sans-serif;
+    font-size:11.5px;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:inline-block;
+  }
+
+  .fade-up{
+    opacity:0;
+    transform:translateY(34px);
+    transition:opacity 1s cubic-bezier(.16,.8,.24,1), transform 1s cubic-bezier(.16,.8,.24,1);
+  }
+  .fade-up.in-view{ opacity:1; transform:translateY(0); }
+
+  /* ---------- ornamental divider ---------- */
+  .ornament{ display:flex; justify-content:center; margin:0 0; }
+  .ornament svg{ width:140px; height:24px; overflow:visible; }
+  .orn-path{
+    stroke:var(--gold);
+    stroke-width:1;
+    fill:none;
+    stroke-dasharray:260;
+    stroke-dashoffset:260;
+    transition:stroke-dashoffset 1.4s cubic-bezier(.16,.8,.24,1);
+  }
+  .ornament.in-view .orn-path{ stroke-dashoffset:0; }
+  .orn-dot{ fill:var(--gold); opacity:0; transition:opacity 0.6s ease 1s; }
+  .ornament.in-view .orn-dot{ opacity:1; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:30px 0;
+    transition:padding 0.4s ease, background 0.4s ease, border-color 0.4s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    padding:16px 0;
+    background:rgba(20,16,13,0.86);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    max-width:var(--max); margin:0 auto; padding:0 40px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand svg{ width:34px; height:34px; }
+  .brand-name{
+    font-family:'Playfair Display', serif;
+    font-size:22px; font-weight:700;
+    letter-spacing:0.08em;
+  }
+  .nav-links{
+    display:flex; gap:40px;
+    font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-muted);
+  }
+  .nav-links a{ position:relative; transition:color 0.3s ease; }
+  .nav-links a::after{
+    content:""; position:absolute; left:0; bottom:-6px;
+    width:100%; height:1px; background:var(--gold);
+    transform:scaleX(0); transform-origin:left;
+    transition:transform 0.35s cubic-bezier(.16,.8,.24,1);
+  }
+  .nav-links a:hover{ color:var(--text); }
+  .nav-links a:hover::after{ transform:scaleX(1); }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Inter', sans-serif;
+    font-size:12.5px; letter-spacing:0.1em; text-transform:uppercase;
+    padding:13px 26px;
+    border:1px solid var(--gold);
+    color:var(--gold-bright);
+    background:transparent;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    transition:color 0.4s ease;
+  }
+  .btn::before{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--gold);
+    transform:scaleX(0); transform-origin:left;
+    transition:transform 0.45s cubic-bezier(.16,.8,.24,1);
+    z-index:-1;
+  }
+  .btn:hover{ color:#14100d; }
+  .btn:hover::before{ transform:scaleX(1); }
+  .btn-solid{
+    background:var(--gold); color:#14100d; border-color:var(--gold);
+  }
+  .btn-solid::before{ background:var(--gold-bright); }
+  .btn-solid:hover{ color:#14100d; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 30%, rgba(124,38,50,0.18), transparent 70%),
+      linear-gradient(180deg, #17110d 0%, #14100d 60%, #100c0a 100%);
+  }
+  .hero-glow{
+    position:absolute; top:38%; left:50%;
+    width:520px; height:520px;
+    background:radial-gradient(circle, rgba(201,162,75,0.16) 0%, transparent 70%);
+    transform:translate(-50%,-50%);
+    filter:blur(6px);
+    animation:flicker 5.5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:0.85; transform:translate(-50%,-50%) scale(1); }
+    22%{ opacity:0.65; transform:translate(-50%,-50%) scale(0.96); }
+    41%{ opacity:1; transform:translate(-50%,-50%) scale(1.04); }
+    63%{ opacity:0.7; transform:translate(-50%,-50%) scale(0.98); }
+    80%{ opacity:0.95; transform:translate(-49%,-51%) scale(1.02); }
+  }
+
+  #embers{ position:absolute; inset:0; pointer-events:none; }
+  .ember{
+    position:absolute;
+    bottom:-10px;
+    width:3px; height:3px;
+    border-radius:50%;
+    background:var(--gold-bright);
+    box-shadow:0 0 6px 1.5px rgba(230,200,120,0.8);
+    opacity:0;
+    animation-name:rise;
+    animation-timing-function:ease-in;
+    animation-iteration-count:infinite;
+  }
+  @keyframes rise{
+    0%{ transform:translate(0,0) scale(0.6); opacity:0; }
+    8%{ opacity:0.9; }
+    50%{ transform:translate(var(--drift), -50vh) scale(1); opacity:0.7; }
+    100%{ transform:translate(calc(var(--drift) * 1.6), -95vh) scale(0.3); opacity:0; }
+  }
+
+  .hero-inner{ position:relative; z-index:2; padding:0 24px; }
+  .hero-inner .eyebrow{ margin-bottom:26px; }
+  .hero h1{
+    font-size:clamp(46px, 8vw, 92px);
+    line-height:1.03;
+    margin:22px 0 10px;
+  }
+  .hero h1 span{ display:block; }
+  .hero .script{ font-size:clamp(30px, 5vw, 48px); color:var(--gold-bright); margin-bottom:26px; display:block; }
+  .hero p{
+    max-width:480px; margin:0 auto 40px;
+    color:var(--text-muted);
+    font-size:16px;
+  }
+  .hero-ctas{ display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
+
+  .scroll-cue{
+    position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    color:var(--text-muted);
+    font-size:10.5px; letter-spacing:0.3em; text-transform:uppercase;
+    z-index:2;
+  }
+  .scroll-cue .line{
+    width:1px; height:38px;
+    background:linear-gradient(to bottom, var(--gold), transparent);
+    animation:scroll-pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes scroll-pulse{
+    0%,100%{ opacity:0.3; }
+    50%{ opacity:1; }
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:130px 0; position:relative; }
+  .section-head{ text-align:center; max-width:620px; margin:0 auto 70px; }
+  .section-head h2{ font-size:clamp(32px, 4vw, 46px); margin-top:16px; }
+  .section-head p{ color:var(--text-muted); margin-top:18px; font-size:15.5px; }
+
+  /* ---------- PHILOSOPHY ---------- */
+  .philosophy{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:70px;
+    align-items:center;
+  }
+  .phil-emblem{
+    aspect-ratio:1;
+    border:1px solid var(--line);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    max-width:380px;
+    margin:0 auto;
+  }
+  .phil-emblem::before{
+    content:"";
+    position:absolute; inset:22px;
+    border:1px solid var(--line);
+    border-radius:50%;
+  }
+  .phil-emblem svg{ width:44%; height:44%; }
+  .philosophy h2{ font-size:clamp(28px, 3.4vw, 38px); margin-bottom:24px; }
+  .philosophy p{ color:var(--text-muted); font-size:15.5px; margin-bottom:18px; max-width:480px; }
+  .signature-line{ margin-top:30px; }
+  .signature-line .script{ font-size:26px; color:var(--gold-bright); }
+  .signature-line span.role{ display:block; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-top:6px; }
+
+  /* ---------- MENU ---------- */
+  .menu-tabs{
+    display:flex; justify-content:center; gap:8px;
+    margin-bottom:54px; flex-wrap:wrap;
+  }
+  .menu-tab{
+    font-size:12px; letter-spacing:0.12em; text-transform:uppercase;
+    padding:11px 22px;
+    color:var(--text-muted);
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    background:none;
+    font-family:'Inter', sans-serif;
+  }
+  .menu-tab.active{ color:var(--gold-bright); border-color:var(--line); }
+  .menu-tab:hover{ color:var(--text); }
+
+  .menu-panel{ display:none; max-width:760px; margin:0 auto; }
+  .menu-panel.active{ display:block; }
+  .menu-item{
+    display:flex; align-items:baseline; gap:14px;
+    padding:22px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .menu-item:first-child{ border-top:1px solid var(--line); }
+  .menu-item-name{
+    font-family:'Playfair Display', serif;
+    font-size:19px; font-weight:600;
+    white-space:nowrap;
+    position:relative;
+  }
+  .menu-item-name::after{
+    content:""; position:absolute; left:0; bottom:-4px;
+    width:0%; height:1px; background:var(--gold);
+    transition:width 0.4s cubic-bezier(.16,.8,.24,1);
+  }
+  .menu-item:hover .menu-item-name::after{ width:100%; }
+  .menu-item-desc{
+    color:var(--text-muted);
+    font-size:13.5px;
+    font-style:italic;
+    font-family:'Cormorant Garamond', serif;
+    flex:1;
+    border-bottom:1px dotted rgba(168,154,132,0.35);
+    padding-bottom:5px;
+    align-self:end;
+    min-width:40px;
+  }
+  .menu-item-price{
+    font-family:'Inter', sans-serif;
+    font-size:14.5px;
+    color:var(--gold-bright);
+    white-space:nowrap;
+  }
+
+  /* ---------- GALLERY ---------- */
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:24px;
+  }
+  .plate-card{
+    text-align:center;
+    padding:30px 20px 26px;
+    border:1px solid var(--line);
+    transition:transform 0.5s cubic-bezier(.16,.8,.24,1), border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  .plate-card:hover{
+    transform:translateY(-8px);
+    border-color:var(--gold);
+    box-shadow:0 24px 50px -20px rgba(0,0,0,0.6);
+  }
+  .plate{
+    width:150px; height:150px;
+    border-radius:50%;
+    margin:0 auto 24px;
+    position:relative;
+    background:radial-gradient(circle at 42% 38%, #2a2118, #1b150f 72%);
+    border:1px solid rgba(201,162,75,0.35);
+    box-shadow:inset 0 0 0 6px rgba(20,16,13,0.9), inset 0 0 30px rgba(0,0,0,0.5);
+    transition:transform 0.6s cubic-bezier(.16,.8,.24,1);
+  }
+  .plate-card:hover .plate{ transform:scale(1.06) rotate(3deg); }
+  .plate span{
+    position:absolute; border-radius:50%;
+  }
+  .p1 span:nth-child(1){ width:46px; height:30px; background:#8a3a2c; top:52px; left:52px; border-radius:40% 60% 55% 45%; }
+  .p1 span:nth-child(2){ width:14px; height:14px; background:#c9a24b; top:44px; left:80px; }
+  .p1 span:nth-child(3){ width:8px; height:8px; background:#5c6b3f; top:70px; left:90px; }
+
+  .p2 span:nth-child(1){ width:60px; height:60px; background:#b8863a; top:45px; left:45px; border-radius:50%; }
+  .p2 span:nth-child(2){ width:60px; height:6px; background:#7c2632; top:70px; left:45px; border-radius:3px; transform:rotate(-8deg); }
+  .p2 span:nth-child(3){ width:10px; height:10px; background:#e6c878; top:38px; left:70px; }
+
+  .p3 span:nth-child(1){ width:70px; height:22px; background:#4a3324; top:64px; left:40px; border-radius:12px; }
+  .p3 span:nth-child(2){ width:16px; height:16px; background:#5c6b3f; top:52px; left:60px; border-radius:50%; }
+  .p3 span:nth-child(3){ width:16px; height:16px; background:#5c6b3f; top:52px; left:78px; border-radius:50%; }
+
+  .plate-card h3{ font-size:17px; margin-bottom:8px; }
+  .plate-card p{ color:var(--text-muted); font-size:13px; }
+
+  /* ---------- QUOTE ---------- */
+  .quote-section{ text-align:center; }
+  .stars{ display:flex; justify-content:center; gap:6px; margin-bottom:30px; }
+  .stars svg{ width:16px; height:16px; }
+  blockquote{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:clamp(22px, 3vw, 32px);
+    max-width:720px;
+    margin:0 auto 26px;
+    color:var(--text);
+    line-height:1.5;
+  }
+  .quote-author{ font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); }
+
+  /* ---------- RESERVE ---------- */
+  .reserve-panel{
+    border:1px solid var(--line);
+    padding:70px 60px;
+    position:relative;
+    text-align:center;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 0%, rgba(124,38,50,0.14), transparent 70%),
+      var(--surface);
+  }
+  .reserve-panel h2{ font-size:clamp(30px, 4vw, 44px); }
+  .reserve-panel p{ color:var(--text-muted); max-width:460px; margin:18px auto 36px; font-size:15px; }
+
+  .info-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:40px;
+    margin-top:60px;
+    text-align:center;
+  }
+  .info-block .eyebrow{ display:block; margin-bottom:14px; }
+  .info-block p{ color:var(--text-muted); font-size:14.5px; }
+  .info-block p strong{ color:var(--text); font-weight:500; display:block; margin-bottom:2px; }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:56px 0 34px;
+  }
+  .footer-row{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:24px; margin-bottom:36px;
+  }
+  .footer-links{ display:flex; gap:30px; font-size:13px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .footer-links a:hover{ color:var(--gold-bright); }
+  .footer-copy{ font-size:12px; color:#6b5f4e; text-align:center; letter-spacing:0.04em; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .nav-links{ display:none; }
+    .philosophy{ grid-template-columns:1fr; text-align:center; }
+    .philosophy p{ margin-left:auto; margin-right:auto; }
+    .signature-line{ display:flex; flex-direction:column; align-items:center; }
+    .gallery{ grid-template-columns:1fr 1fr; }
+    .info-grid{ grid-template-columns:1fr; gap:30px; }
+    .reserve-panel{ padding:54px 28px; }
+    .menu-item{ flex-wrap:wrap; }
+    .menu-item-desc{ order:3; width:100%; border-bottom:none; }
+  }
+  @media (max-width:560px){
+    .gallery{ grid-template-columns:1fr; }
+    section{ padding:90px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .fade-up{ transition:none; opacity:1; transform:none; }
+    .hero-glow, .ember, .scroll-cue .line{ animation:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav>
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="18.5" stroke="#c9a24b" stroke-width="1"/>
+        <path d="M20 11l3.6 9.6H30l-5.6 4.6L26.4 34 20 27.8 13.6 34l2-8.8L10 20.6h6.4L20 11z" stroke="#c9a24b" stroke-width="1" fill="none"/>
+      </svg>
+      <span class="brand-name">AMBRE</span>
+    </div>
+    <div class="nav-links">
+      <a href="#philosophy">Story</a>
+      <a href="#menu">Menu</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#reserve">Reserve</a>
+    </div>
+    <a href="#reserve" class="btn">Reserve a Table</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div id="embers"></div>
+  <div class="hero-inner">
+    <span class="eyebrow">Fine Dining · Est. 2015</span>
+    <h1>
+      <span>A table,</span>
+      <span class="script">held for you</span>
+    </h1>
+    <p>Seasonal, chef-driven cuisine served in a room built for slow evenings and quiet celebration.</p>
+    <div class="hero-ctas">
+      <a href="#reserve" class="btn btn-solid">Reserve a Table</a>
+      <a href="#menu" class="btn">View Menu</a>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="wrap philosophy">
+    <div class="fade-up phil-emblem">
+      <svg viewBox="0 0 100 100" fill="none">
+        <path d="M50 12c-8 14-22 20-22 38 0 13 10 24 22 24s22-11 22-24c0-18-14-24-22-38z" stroke="#c9a24b" stroke-width="1"/>
+        <path d="M50 34v40" stroke="#c9a24b" stroke-width="1"/>
+      </svg>
+    </div>
+    <div>
+      <span class="eyebrow fade-up">Our Philosophy</span>
+      <h2 class="fade-up">Cooking that follows<br>the season, not the trend.</h2>
+      <p class="fade-up">Ambre began as a single table in a converted wine cellar, built on one idea: let the ingredient lead. Every dish on our menu changes with what the morning markets bring in — nothing frozen, nothing rushed.</p>
+      <p class="fade-up">Our kitchen is small on purpose. It lets us taste every plate before it leaves the pass, and hold a standard we'd be comfortable serving in our own homes.</p>
+      <div class="fade-up signature-line">
+        <span class="script">Julien Moreau</span>
+        <span class="role">Executive Chef &amp; Founder</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament fade-up">
+  <svg viewBox="0 0 140 24">
+    <path class="orn-path" d="M0 12 H55 M85 12 H140"/>
+    <circle class="orn-dot" cx="70" cy="12" r="4"/>
+  </svg>
+</div>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <span class="eyebrow">Tasting &amp; À La Carte</span>
+      <h2>This Season's Menu</h2>
+      <p>A living document — refreshed as the market changes, printed fresh each week for the table.</p>
+    </div>
+
+    <div class="menu-tabs fade-up">
+      <button class="menu-tab active" data-tab="starters">Starters</button>
+      <button class="menu-tab" data-tab="mains">Mains</button>
+      <button class="menu-tab" data-tab="desserts">Desserts</button>
+      <button class="menu-tab" data-tab="wine">Wine</button>
+    </div>
+
+    <div class="menu-panel active" id="starters">
+      <div class="menu-item">
+        <span class="menu-item-name">Heirloom Beet Tartare</span>
+        <span class="menu-item-desc">smoked crème fraîche, rye crumble, dill oil</span>
+        <span class="menu-item-price">$18</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Seared Scallop</span>
+        <span class="menu-item-desc">brown butter, hazelnut, apple, sage</span>
+        <span class="menu-item-price">$24</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Wild Mushroom Consommé</span>
+        <span class="menu-item-desc">roasted garlic custard, chive oil</span>
+        <span class="menu-item-price">$16</span>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="mains">
+      <div class="menu-item">
+        <span class="menu-item-name">Duck Breast</span>
+        <span class="menu-item-desc">celeriac purée, blackberry jus, charred endive</span>
+        <span class="menu-item-price">$42</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Dry-Aged Ribeye</span>
+        <span class="menu-item-desc">bone marrow butter, confit shallot, jus</span>
+        <span class="menu-item-price">$58</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Line-Caught Halibut</span>
+        <span class="menu-item-desc">saffron beurre blanc, fennel, sea herbs</span>
+        <span class="menu-item-price">$46</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Wild Mushroom Risotto</span>
+        <span class="menu-item-desc">aged parmesan, black truffle, chervil</span>
+        <span class="menu-item-price">$34</span>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="desserts">
+      <div class="menu-item">
+        <span class="menu-item-name">Dark Chocolate Délice</span>
+        <span class="menu-item-desc">salted caramel, cocoa nib, olive oil</span>
+        <span class="menu-item-price">$16</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Vanilla Bean Crème Brûlée</span>
+        <span class="menu-item-desc">candied orange, shortbread</span>
+        <span class="menu-item-price">$14</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Poached Pear</span>
+        <span class="menu-item-desc">mulled wine, mascarpone, walnut praline</span>
+        <span class="menu-item-price">$15</span>
+      </div>
+    </div>
+
+    <div class="menu-panel" id="wine">
+      <div class="menu-item">
+        <span class="menu-item-name">Sommelier's Pairing</span>
+        <span class="menu-item-desc">five glasses, chosen nightly with the tasting menu</span>
+        <span class="menu-item-price">$85</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">Reserve Burgundy</span>
+        <span class="menu-item-desc">by the bottle, from our cellar list</span>
+        <span class="menu-item-price">$120+</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-item-name">House Champagne</span>
+        <span class="menu-item-desc">by the glass</span>
+        <span class="menu-item-price">$22</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <span class="eyebrow">From the Kitchen</span>
+      <h2>A Few Favorites</h2>
+    </div>
+    <div class="gallery">
+      <div class="plate-card fade-up">
+        <div class="plate p1"><span></span><span></span><span></span></div>
+        <h3>Seared Scallop</h3>
+        <p>Brown butter &amp; hazelnut</p>
+      </div>
+      <div class="plate-card fade-up">
+        <div class="plate p2"><span></span><span></span><span></span></div>
+        <h3>Duck Breast</h3>
+        <p>Blackberry jus &amp; endive</p>
+      </div>
+      <div class="plate-card fade-up">
+        <div class="plate p3"><span></span><span></span><span></span></div>
+        <h3>Mushroom Risotto</h3>
+        <p>Black truffle &amp; parmesan</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="wrap">
+    <div class="stars fade-up">
+      <svg viewBox="0 0 20 20" fill="#c9a24b"><path d="M10 1l2.6 6.3 6.8.5-5.2 4.4 1.7 6.6L10 15.5l-5.9 3.3 1.7-6.6L.6 7.8l6.8-.5L10 1z"/></svg>
+      <svg viewBox="0 0 20 20" fill="#c9a24b"><path d="M10 1l2.6 6.3 6.8.5-5.2 4.4 1.7 6.6L10 15.5l-5.9 3.3 1.7-6.6L.6 7.8l6.8-.5L10 1z"/></svg>
+      <svg viewBox="0 0 20 20" fill="#c9a24b"><path d="M10 1l2.6 6.3 6.8.5-5.2 4.4 1.7 6.6L10 15.5l-5.9 3.3 1.7-6.6L.6 7.8l6.8-.5L10 1z"/></svg>
+      <svg viewBox="0 0 20 20" fill="#c9a24b"><path d="M10 1l2.6 6.3 6.8.5-5.2 4.4 1.7 6.6L10 15.5l-5.9 3.3 1.7-6.6L.6 7.8l6.8-.5L10 1z"/></svg>
+      <svg viewBox="0 0 20 20" fill="#c9a24b"><path d="M10 1l2.6 6.3 6.8.5-5.2 4.4 1.7 6.6L10 15.5l-5.9 3.3 1.7-6.6L.6 7.8l6.8-.5L10 1z"/></svg>
+    </div>
+    <blockquote class="fade-up">"Every course felt considered. The kind of meal you plan an anniversary around — quiet, warm, and never rushed."</blockquote>
+    <div class="quote-author fade-up">— Condé Nast Traveler</div>
+  </div>
+</section>
+
+<!-- RESERVE -->
+<section id="reserve">
+  <div class="wrap">
+    <div class="reserve-panel fade-up">
+      <span class="eyebrow">Reservations</span>
+      <h2>Join us for an evening.</h2>
+      <p>Tables are held for 48 hours after booking. For parties of eight or more, please call us directly.</p>
+      <a href="tel:+15551234567" class="btn btn-solid">Call (555) 123-4567</a>
+
+      <div class="info-grid">
+        <div class="info-block">
+          <span class="eyebrow">Hours</span>
+          <p><strong>Tue – Sat</strong>5:30pm – 10:30pm</p>
+          <p><strong>Sun – Mon</strong>Closed</p>
+        </div>
+        <div class="info-block">
+          <span class="eyebrow">Location</span>
+          <p><strong>14 Rue Cardinal</strong>Downtown Arts District</p>
+        </div>
+        <div class="info-block">
+          <span class="eyebrow">Dress Code</span>
+          <p><strong>Smart, Elegant</strong>Jackets suggested, not required</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div class="brand">
+        <svg viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18.5" stroke="#c9a24b" stroke-width="1"/>
+          <path d="M20 11l3.6 9.6H30l-5.6 4.6L26.4 34 20 27.8 13.6 34l2-8.8L10 20.6h6.4L20 11z" stroke="#c9a24b" stroke-width="1" fill="none"/>
+        </svg>
+        <span class="brand-name">AMBRE</span>
+      </div>
+      <div class="footer-links">
+        <a href="#menu">Menu</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#reserve">Reserve</a>
+      </div>
+    </div>
+    <div class="footer-copy">14 Rue Cardinal, Downtown Arts District — © 2026 Ambre Restaurant. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  // header shrink on scroll
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.fade-up, .ornament');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('in-view'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // menu tabs
+  const tabs = document.querySelectorAll('.menu-tab');
+  const panels = document.querySelectorAll('.menu-panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // realistic embers: randomized rise particles
+  const emberContainer = document.getElementById('embers');
+  const EMBER_COUNT = 22;
+  for (let i = 0; i < EMBER_COUNT; i++) {
+    const el = document.createElement('div');
+    el.className = 'ember';
+    const left = Math.random() * 100;
+    const duration = 6 + Math.random() * 6;
+    const delay = Math.random() * 10;
+    const drift = (Math.random() * 80 - 40) + 'px';
+    const size = 2 + Math.random() * 3;
+    el.style.left = left + '%';
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.setProperty('--drift', drift);
+    el.style.animationDuration = duration + 's';
+    el.style.animationDelay = delay + 's';
+    emberContainer.appendChild(el);
+  }
+</script>
+
+</body>
+</html>
